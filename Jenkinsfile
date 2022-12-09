@@ -10,7 +10,7 @@ node('workers'){
         def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         echo '=== Testing Petclinic Application ==='
                 '-v /media/data/tmp/go:/tmp/go'
-        imageTest.inside(" -v $PWD/reports:/app/target/surefire-reports -u jenkins") {
+        imageTest.inside(" -v $PWD/reports:/app/target/surefire-reports -v $HOME/.m2:/root/.m2 -u root") {
             sh "mvn test"
         }
         junit '$PWD/reports/*.xml'
