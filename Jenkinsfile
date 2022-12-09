@@ -35,14 +35,6 @@ node('workers'){
         }
     }
 
-    stage('Cleanup'){
-        echo '=== Delete the local docker images ==='
-        sh("docker rmi -f ${imageName}:latest || :")
-        if (env.BRANCH_NAME == 'master') {
-            sh("docker rmi -f ${imageName}:master || :")
-        }
-    }      
-
     stage('Deploy'){
         if(env.BRANCH_NAME == 'master'){
             build job: "petclinic-deployment/master"
