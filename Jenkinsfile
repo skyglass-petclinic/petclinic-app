@@ -23,7 +23,7 @@ node('workers'){
         echo '=== Packaging Petclinic Application ==='
         docker.withRegistry(registry, 'dockerHubCredentials') {
             imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-                sh "mvn -B -DskipTests package"
+                sh "mvn -B -DskipTests clean package"
                 sh "mvn jib:build"
             }
         }
