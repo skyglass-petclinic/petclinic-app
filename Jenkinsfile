@@ -2,12 +2,14 @@ def imageName = 'skyglass/petclinic'
 def registry = 'https://registry.hub.docker.com'
 
 node('workers'){
+    def imageTest
+
     stage('Checkout'){
         checkout scm
     }
 
     stage('Unit Tests'){
-        def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
+        imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         echo '=== Testing Petclinic Application ==='
                 '-v /media/data/tmp/go:/tmp/go'
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
@@ -17,17 +19,13 @@ node('workers'){
 
     }
 
-    stage('Package'){
-        def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
+    stage('Build'){
         echo '=== Packaging Petclinic Application ==='
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-            sh " mvn -B -DskipTests install"
+            sh "mvn -B -DskipTests package"
+            sh "mvn jib:dockerBuild"
         }
     }
-
-    stage('Build'){
-        docker.build(imageName)
-    } 
 
     stage('Push'){
         docker.withRegistry(registry, 'dockerHubCredentials') {
@@ -39,7 +37,7 @@ node('workers'){
         }
     }
 
-    stage('Remove local images'){
+    stage('Cleanup'){
         echo '=== Delete the local docker images ==='
         sh("docker rmi -f ${imageName}:latest || :")
         if (env.BRANCH_NAME == 'master') {
