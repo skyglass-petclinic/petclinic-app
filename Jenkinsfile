@@ -21,7 +21,7 @@ node('workers'){
         def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         echo '=== Packaging Petclinic Application ==='
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-            sh " mvn -B -DskipTests package"
+            sh " mvn -B -DskipTests install"
         }
     }
 
