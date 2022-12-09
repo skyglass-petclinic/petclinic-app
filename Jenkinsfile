@@ -9,8 +9,8 @@ node('workers'){
     stage('Unit Tests'){
         def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         echo '=== Testing Petclinic Application ==='
-        sh "docker run --rm -v $PWD/reports:/app/target/surefire-reports ${imageName}-test mvn test"
-        junit '$PWD/reports/*.xml'
+        sh "docker run --rm -v $PWD/app:/app ${imageName}-test mvn test"
+        junit '$PWD/app/target/surefire-reports/*.xml'
     }
 
     stage('Package'){
