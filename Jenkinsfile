@@ -27,10 +27,11 @@ node('workers'){
                 filename 'Dockerfile.test'
                 args "--user root -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock"
             }
+
+            sh 'mvn -B -DskipTests package'
+            sh 'mvn jib:dockerBuild'
         }
 
-        sh 'mvn -B -DskipTests package'
-        sh 'mvn jib:dockerBuild'
     }
 
     stage('Push'){
