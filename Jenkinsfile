@@ -23,7 +23,7 @@ node('workers'){
         echo '=== Packaging Petclinic Application ==='
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
             sh " mvn -B -DskipTests package"
-            sh "mvn jib:dockerBuild"
+            sh "mvn jib:build"
         }
     }
 
