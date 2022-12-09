@@ -8,22 +8,21 @@ node('workers'){
         checkout scm
     }
 
-    // stage('Unit Tests'){
-    //     imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
-    //     echo '=== Testing Petclinic Application ==='
-    //             '-v /media/data/tmp/go:/tmp/go'
-    //     imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-    //         sh "mvn clean test"
-    //     }
-    //     junit "target/surefire-reports/*.xml"
+    stage('Unit Tests'){
+        imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
+        echo '=== Testing Petclinic Application ==='
+                '-v /media/data/tmp/go:/tmp/go'
+        imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
+            sh "mvn clean test"
+        }
+        junit "target/surefire-reports/*.xml"
 
-    // }
+    }
 
     stage('Build'){
         echo '=== Packaging Petclinic Application ==='
-        imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-            sh " mvn -B -DskipTests package"
+            sh "mvn -B -DskipTests package"
         }
     }
 
