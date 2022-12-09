@@ -9,9 +9,8 @@ node('workers'){
     stage('Unit Tests'){
         def imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         echo '=== Testing Petclinic Application ==='
-        echo '$PWD'
-        imageTest.inside('-u root:root') {
-            echo '$PWD'
+                '-v /media/data/tmp/go:/tmp/go'
+        imageTest.inside(" -v $PWD/reports:/app/target/surefire-reports -u jenkins") {
             sh "mvn test"
         }
         junit '$PWD/reports/*.xml'
