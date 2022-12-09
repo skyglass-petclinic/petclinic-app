@@ -19,17 +19,11 @@ node('workers'){
 
     }
 
-    stage('Build'){
+    stage('Build & Push'){
         echo '=== Packaging Petclinic Application ==='
-        imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-            sh "mvn -B -DskipTests package"
-        }
-    }
-
-    stage('Push'){
-        echo '=== Pushing Docker Image ==='
         docker.withRegistry(registry, 'dockerHubCredentials') {
             imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
+                sh "mvn -B -DskipTests package"
                 sh "mvn jib:build"
             }
         }
