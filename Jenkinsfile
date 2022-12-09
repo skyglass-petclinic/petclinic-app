@@ -11,7 +11,7 @@ node('workers'){
         echo '=== Testing Petclinic Application ==='
                 '-v /media/data/tmp/go:/tmp/go'
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-            sh "mvn test"
+            sh "mvn clean test"
         }
         junit "target/surefire-reports/*.xml"
 
@@ -19,7 +19,9 @@ node('workers'){
 
     stage('Package'){
         echo '=== Testing Petclinic Application ==='
-        sh "docker run --rm -v $PWD/target:/app/target ${imageName}-test mvn -B -DskipTests clean package"
+         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
+            sh " mvn -B -DskipTests clean package"
+        }
     }
 
     stage('Build'){
@@ -38,15 +40,15 @@ node('workers'){
 
     stage('Remove local images'){
         echo '=== Delete the local docker images ==='
-        sh("docker rmi -f skyglass/petclinic-online:latest || :")
+        sh("docker rmi -f ${imageName}:latest || :")
         if (env.BRANCH_NAME == 'master') {
-            sh("docker rmi -f skyglass/petclinic-online:master || :")
+            sh("docker rmi -f ${imageName}:master || :")
         }
     }      
 
     stage('Deploy'){
         if(env.BRANCH_NAME == 'master'){
-            build job: "watchlist-deployment/master"
+            build job: "petclinic-deployment/master"
         }
     }    
 }
