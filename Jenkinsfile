@@ -21,21 +21,17 @@ node('workers'){
 
     stage('Build'){
         echo '=== Packaging Petclinic Application ==='
-        docker.withRegistry(registry, 'dockerHubCredentials') {
-            imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
-            imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
-                sh " mvn -B -DskipTests package"
-                sh "mvn jib:build"
-            }
+        imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
+        imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
+            sh " mvn -B -DskipTests package"
         }
     }
 
     stage('Push'){
+        echo '=== Pushing Docker Image ==='
         docker.withRegistry(registry, 'dockerHubCredentials') {
-            docker.image(imageName).push(commitID())
-
-            if (env.BRANCH_NAME == 'master') {
-                docker.image(imageName).push('master')
+            imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
+                sh "mvn jib:build"
             }
         }
     }
