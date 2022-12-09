@@ -21,6 +21,7 @@ node('workers'){
 
     stage('Build'){
         echo '=== Packaging Petclinic Application ==='
+        imageTest= docker.build("${imageName}-test", "-f Dockerfile.test .")
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
             sh " mvn -B -DskipTests package"
             sh "mvn jib:build"
