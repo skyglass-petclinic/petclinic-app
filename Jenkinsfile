@@ -29,10 +29,8 @@ node('workers'){
             }
         }
 
-        steps {
-            sh 'mvn -B -DskipTests package'
-            sh 'mvn jib:dockerBuild'
-        }
+        sh 'mvn -B -DskipTests package'
+        sh 'mvn jib:dockerBuild'
     }
 
     stage('Push'){
