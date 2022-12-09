@@ -13,7 +13,7 @@ node('workers'){
         imageTest.inside(" -v $PWD/target:/app/target -v $HOME/.m2:/root/.m2 -u root") {
             sh "mvn test"
         }
-        junit "$PWD/target/surefire-reports/*.xml"
+        junit "target/surefire-reports/*.xml"
 
     }
 
